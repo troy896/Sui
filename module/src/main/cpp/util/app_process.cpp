@@ -57,12 +57,12 @@ v_current = (uintptr_t) v + v_size - sizeof(char *); \
 #ifdef JAVA_DEBUGGABLE
         #define ARG_PUSH_DEBUG_ONLY(v, arg) ARG_PUSH(v, arg)
 #define ARG_PUSH_DEBUG_VM_PARAMS(v) \
-    if (android::GetApiLevel() >= 30) { \
+    if (android_get_device_api_level() >= 30) { \
         ARG_PUSH(v, "-Xcompiler-option"); \
         ARG_PUSH(v, "--debuggable"); \
         ARG_PUSH(v, "-XjdwpProvider:adbconnection"); \
         ARG_PUSH(v, "-XjdwpOptions:suspend=n,server=y"); \
-    } else if (android::GetApiLevel() >= 28) { \
+    } else if (android_get_device_api_level() >= 28) { \
         ARG_PUSH(v, "-Xcompiler-option"); \
         ARG_PUSH(v, "--debuggable"); \
         ARG_PUSH(v, "-XjdwpProvider:internal"); \

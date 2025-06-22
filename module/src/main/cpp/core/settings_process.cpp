@@ -52,7 +52,7 @@ namespace Settings {
     static jint bindApplicationTransactionCode = -1;
 
     static bool installDex(JNIEnv *env, const char *appDataDir, Dex *dexFile) {
-        if (android::GetApiLevel() < 26) {
+        if (android_get_device_api_level() < 26) {
             char dexPath[PATH_MAX], oatDir[PATH_MAX];
             snprintf(dexPath, PATH_MAX, "%s/sui/%s", appDataDir, DEX_NAME);
             snprintf(oatDir, PATH_MAX, "%s/sui/oat", appDataDir);
@@ -122,7 +122,7 @@ namespace Settings {
     }
 
     void main(JNIEnv *env, const char *appDataDir, Dex *dexFile) {
-        if (android::GetApiLevel() <= 26) {
+        if (android_get_device_api_level() <= 26) {
             return;
         }
 
@@ -147,7 +147,7 @@ namespace Settings {
 
         BinderHook::Install(javaVm, env, ExecTransact);
 
-        if (android::GetApiLevel() >= 26) {
+        if (android_get_device_api_level() >= 26) {
             jclass applicationThreadClass;
             jfieldID bindApplicationId;
 

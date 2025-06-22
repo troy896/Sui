@@ -1,11 +1,6 @@
 plugins {
-    id 'com.android.application' version '8.0.2' apply false
-    id 'com.android.library' version '8.0.2' apply false
-    id 'org.jetbrains.kotlin.jvm' version '1.8.0' apply false
-    alias libs.plugins.refine apply false
+    id("idea")
 }
-
-apply plugin: 'idea'
 
 idea.module {
     excludeDirs += file('out')
@@ -15,33 +10,21 @@ idea.module {
 
 subprojects {
     plugins.withId("com.android.base") {
-        plugins.apply('dev.rikka.tools.refine')
-
         android {
-            compileSdk = 33
+            compileSdk = 36
+            buildToolsVersion = "36.0.0"
+            ndkVersion = "29.0.13113456"
             defaultConfig {
-                minSdk = 23
-                targetSdk = 33
+                minSdk = 24
+                targetSdk = 36
             }
             compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
+                sourceCompatibility = JavaVersion.VERSION_21
+                targetCompatibility = JavaVersion.VERSION_21
             }
             buildFeatures {
                 aidl true
             }
         }
     }
-}
-
-
-tasks.register('clean', Delete) {
-    delete rootProject.buildDir
-}
-
-ext {
-    minSdkVersion = 23
-    targetSdkVersion = 33
-    api_min_sdk = 23
-    api_target_sdk = 33
 }

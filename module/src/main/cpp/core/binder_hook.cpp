@@ -76,7 +76,7 @@ static void InstallDirectly(JavaVM *javaVm, JNIEnv *env) {
 }
 
 static bool InstallOverrideTable() {
-    if (android::GetApiLevel() < 26) return false;
+    if (android_get_device_api_level() < 26) return false;
 
     auto setTableOverride = (SetTableOverride_t *) plt_dlsym("_ZN3art9JNIEnvExt16SetTableOverrideEPK18JNINativeInterface", nullptr);
     if (setTableOverride != nullptr) {

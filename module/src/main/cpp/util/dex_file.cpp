@@ -125,7 +125,7 @@ Dex::~Dex() {
 }
 
 void Dex::createClassLoader(JNIEnv *env) {
-    if (android::GetApiLevel() >= 26) {
+    if (android_get_device_api_level() >= 26) {
         createInMemoryDexClassLoader(env);
     } else {
         copyDexToFile(pre26DexPath_);

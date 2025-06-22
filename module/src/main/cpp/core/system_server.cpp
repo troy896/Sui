@@ -52,7 +52,7 @@ namespace SystemServer {
     static jint startShortcutTransactionCode = -1;
 
     static bool installDex(JNIEnv *env, Dex *dexFile) {
-        if (android::GetApiLevel() < 26) {
+        if (android_get_device_api_level() < 26) {
             dexFile->setPre26Paths("/data/system/sui/"  DEX_NAME, "/data/system/sui/oat");
         }
         dexFile->createClassLoader(env);
@@ -143,7 +143,7 @@ namespace SystemServer {
 
         BinderHook::Install(javaVm, env, ExecTransact);
 
-        /*if (android::GetApiLevel() >= 26) {
+        /*if (android_get_device_api_level() >= 26) {
             jclass launcherAppsClass;
             jfieldID startShortcutId;
 

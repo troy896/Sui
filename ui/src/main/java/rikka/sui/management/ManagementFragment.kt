@@ -33,11 +33,9 @@ import rikka.lifecycle.Status
 import rikka.lifecycle.viewModels
 import rikka.recyclerview.addFastScroller
 import rikka.recyclerview.fixEdgeEffect
-import rikka.sui.R
 import rikka.sui.app.AppFragment
 import rikka.sui.databinding.ManagementBinding
 import rikka.sui.model.AppInfo
-import rikka.widget.borderview.BorderView.OnBorderVisibilityChangedListener
 
 class ManagementFragment : AppFragment() {
 
@@ -56,10 +54,10 @@ class ManagementFragment : AppFragment() {
         val context = view.context
 
         binding.list.apply {
-            borderVisibilityChangedListener =
-                OnBorderVisibilityChangedListener { top: Boolean, _: Boolean, _: Boolean, _: Boolean ->
-                    appActivity?.appBar?.setRaised(!top)
-                }
+//            borderVisibilityChangedListener =
+//                OnBorderVisibilityChangedListener { top: Boolean, _: Boolean, _: Boolean, _: Boolean ->
+//                    appActivity?.appBar?.setRaised(!top)
+//                }
             adapter = this@ManagementFragment.adapter
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
             addFastScroller(binding.swipeRefresh)

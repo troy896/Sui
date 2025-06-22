@@ -9,7 +9,7 @@ void UmountApexAdbd() {
     static bool called = false;
     if (called) return;
 
-    if (android::GetApiLevel() >= __ANDROID_API_R__) {
+    if (android_get_device_api_level() >= __ANDROID_API_R__) {
         called = true;
 
         umount2("/apex/com.android.adbd/bin", MNT_DETACH);

@@ -34,7 +34,6 @@ import rikka.core.res.resolveColor
 import rikka.core.res.resolveColorStateList
 import rikka.html.text.toHtml
 import rikka.recyclerview.BaseViewHolder
-import rikka.recyclerview.BaseViewHolder.Creator
 import rikka.sui.R
 import rikka.sui.databinding.ManagementAppItemBinding
 import rikka.sui.model.AppInfo
@@ -42,7 +41,7 @@ import rikka.sui.server.SuiConfig
 import rikka.sui.util.AppIconCache
 import rikka.sui.util.BridgeServiceClient
 import rikka.sui.util.UserHandleCompat
-import java.util.*
+import java.util.Locale
 
 class ManagementAppItemViewHolder(private val binding: ManagementAppItemBinding) : BaseViewHolder<AppInfo>(binding.root),
     View.OnClickListener {
@@ -65,7 +64,7 @@ class ManagementAppItemViewHolder(private val binding: ManagementAppItemBinding)
 
     private inline val packageName get() = data.packageInfo.packageName
     private inline val ai get() = data.packageInfo.applicationInfo
-    private inline val uid get() = ai.uid
+    private inline val uid get() = ai!!.uid
 
     private var loadIconJob: Job? = null
 
@@ -139,7 +138,7 @@ class ManagementAppItemViewHolder(private val binding: ManagementAppItemBinding)
             }
             try {
                 BridgeServiceClient.getService()
-                    .updateFlagsForUid(data.packageInfo.applicationInfo.uid, SuiConfig.MASK_PERMISSION, newValue)
+                    .updateFlagsForUid(data.packageInfo.applicationInfo!!.uid, SuiConfig.MASK_PERMISSION, newValue)
             } catch (e: Throwable) {
                 Log.e("SuiSettings", "updateFlagsForUid", e)
                 return
@@ -160,16 +159,16 @@ class ManagementAppItemViewHolder(private val binding: ManagementAppItemBinding)
         val pm = itemView.context.packageManager
         val userId = UserHandleCompat.getUserId(uid)
 
-        icon.setImageDrawable(ai.loadIcon(pm))
+        icon.setImageDrawable(ai!!.loadIcon(pm))
 
-        loadIconJob = AppIconCache.loadIconBitmapAsync(context, ai, ai.uid / 100000, icon)
+        loadIconJob = AppIconCache.loadIconBitmapAsync(context, ai!!, ai!!.uid / 100000, icon)
 
         name.text = if (userId != UserHandleCompat.myUserId()) {
-            "${ai.loadLabel(pm)} - ($userId)"
+            "${ai!!.loadLabel(pm)} - ($userId)"
         } else {
-            ai.loadLabel(pm)
+            ai!!.loadLabel(pm)
         }
-        pkg.text = ai.packageName
+        pkg.text = ai!!.packageName
 
         spinner.adapter = optionsAdapter
         spinner.onItemSelectedListener = onItemSelectedListener

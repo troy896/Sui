@@ -447,7 +447,7 @@ static int setup_adb_root(const char *root_path) {
     strcpy(adbd_preload, root_path);
     strcat(adbd_preload, "/lib/libadbd_preload.so");
 
-    if (android::GetApiLevel() >= __ANDROID_API_R__) {
+    if (android_get_device_api_level() >= __ANDROID_API_R__) {
         if (access("/apex/com.android.adbd/bin/adbd", F_OK) != 0) {
             PLOGE("access /apex/com.android.adbd/bin/adbd");
             LOGW("Apex not exists on API 31+ device");
