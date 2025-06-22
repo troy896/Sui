@@ -92,7 +92,7 @@ afterEvaluate {
             def optimizeResourceTask = tasks.getByName("optimize${variantCapped}Resources").doLast {
                 def aapt2 = Paths.get(project.android.sdkDirectory.path, 'build-tools', project.android.buildToolsVersion, 'aapt2')
                 def zip = Paths.get(project.buildDir.path, 'intermediates',
-                        'processed_res', variantLowered, 'out', "resources-${variantLowered}.ap_")
+                        'optimized_processed_res', variantLowered, "optimize${variantCapped}Resources", "resources-${variantLowered}-optimize.ap_")
                 def map = Paths.get(project.buildDir.path, 'outputs',
                         'mapping', variantLowered, 'resources.txt')
                 Files.createDirectories(map.getParent())
