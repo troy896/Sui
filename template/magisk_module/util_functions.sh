@@ -20,7 +20,6 @@ enforce_install_from_magisk_app() {
   if [ ! "$BOOTMODE" ]; then
     ui_print "*********************************************************"
     ui_print "! Install from recovery is NOT supported"
-    ui_print "! Some recovery has broken implementations, install with such recovery will finally cause Riru or Riru modules not working"
     ui_print "! Please install from Magisk app"
     abort "*********************************************************"
   fi

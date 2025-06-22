@@ -14,6 +14,13 @@ android {
     defaultConfig {
         versionCode gitCommitCount
         versionName moduleVersion.substring(1)
+        externalNativeBuild {
+            cmake {
+                arguments "-DFLAVOR=zygisk",
+                        "-DZYGISK_MODULE_ID:STRING=\"$moduleId\"",
+                        "-DANDROID_STL=none"
+            }
+        }
     }
     buildFeatures {
         viewBinding true
@@ -35,20 +42,6 @@ android {
             proguardFiles 'proguard-rules.pro'
         }
     }
-    flavorDimensions "version"
-    productFlavors {
-        zygisk {
-            dimension "version"
-            externalNativeBuild {
-                cmake {
-                    arguments "-DFLAVOR=zygisk",
-                            "-DZYGISK_MODULE_ID:STRING=\"$moduleId\"",
-                            "-DANDROID_STL=none"
-
-                }
-            }
-        }
-    }
     lintOptions {
         checkReleaseBuilds false
     }
@@ -60,7 +53,6 @@ android {
 dependencies {
     implementation libs.refine.runtime
 
-    implementation 'dev.rikka.ndk:riru:26.0.0'
     implementation 'org.lsposed.libcxx:libcxx:27.0.12077973'
     implementation 'dev.rikka.ndk.thirdparty:nativehelper:1.0.1'
     implementation 'dev.rikka.rikkax.parcelablelist:parcelablelist:2.0.1'

@@ -46,7 +46,6 @@ public class AppActivity extends AppCompatActivity {
     public AppActivity(Application application, Resources resources) {
         this.application = application;
         this.resources = resources;
-//        DayNightDelegate.setApplicationContext(this);
     }
 
     @Override
@@ -66,8 +65,7 @@ public class AppActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
-        setTitle("Sui");
+        setTheme(R.style.Theme_Material3_DayNight);
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.appbar_fragment_activity);
 
@@ -75,7 +73,6 @@ public class AppActivity extends AppCompatActivity {
         toolbarContainer = findViewById(R.id.toolbar_container);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-//        setAppBar(toolbarContainer, toolbar);
         setSupportActionBar(toolbar);
     }
 
