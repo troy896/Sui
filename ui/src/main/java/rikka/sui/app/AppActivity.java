@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -65,7 +66,7 @@ public class AppActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.Theme_Material3_DayNight);
+        setTheme(R.style.Theme_Material3_DayNight_NoActionBar);
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.appbar_fragment_activity);
 
@@ -74,6 +75,7 @@ public class AppActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
+        EdgeToEdge.enable(this);
     }
 
     @Override
