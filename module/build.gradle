@@ -160,11 +160,21 @@ afterEvaluate {
                     "magisk --install-module /data/local/tmp/${zipName}"
         }
 
+        task("flashWithKsud${variantCapped}", type: Exec) {
+            dependsOn("push${variantCapped}")
+            commandLine android.adbExecutable, "shell", "su", "-c",
+                    "ksud module install /data/local/tmp/${zipName}"
+        }
+
         task("flashAndReboot${variantCapped}", type: Exec) {
             dependsOn("flash${variantCapped}")
             commandLine android.adbExecutable, "shell", "reboot"
         }
 
+        task("flashWithKsudAndReboot${variantCapped}", type: Exec) {
+            dependsOn("flashWithKsud${variantCapped}")
+            commandLine android.adbExecutable, "shell", "reboot"
+        }
         variant.assembleProvider.get().finalizedBy("zip${variantCapped}")
     }
 }
