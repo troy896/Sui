@@ -2,10 +2,10 @@ name: Module
 
 on:
   push:
-    branches:
-      - master
     paths-ignore:
+      - '.github/ISSUE_TEMPLATE'
       - '**/README.md'
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -22,49 +22,21 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'gradle'
-      - name: Cache Gradle Dependencies
-        uses: actions/cache@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            !~/.gradle/caches/build-cache-*
-          key: gradle-deps-module-${{ hashFiles('**/build.gradle') }}
-          restore-keys: |
-            gradle-deps
-      - name: Cache Gradle Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            !~/.gradle/caches/build-cache-*
-          key: gradle-deps-module-${{ hashFiles('**/build.gradle') }}
-          restore-keys: |
-            gradle-deps
-      - name: Cache Ccache
-        uses: actions/cache@v4
-        with:
-          path: ~/.ccache
-          key: ${{ runner.os }}-ccache-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-ccache-cache-
-      - name: Install ccache
-        run: |
-          sudo apt-get install -y ccache
-          ccache -o max_size=2G
-          ccache -o hash_dir=false
+          dependency-graph: generate-and-submit
+          build-scan-publish: true
+          build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
+          build-scan-terms-of-use-agree: "yes"
       - name: Build with Gradle
+        id: buildWithGradle
         run: |
-          mkdir -p ~/.gradle/wrapper
-          mkdir -p ~/.gradle/caches
-          [ $(du -s ~/.gradle/wrapper | awk '{ print $1 }') -gt 250000 ] && rm -rf ~/.gradle/wrapper/* || true
-          find ~/.gradle/caches -exec touch -d "2 days ago" {} + || true
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
+          echo 'android.sdk.channel=3' >> gradle.properties
+          echo 'android.native.buildOutput=verbose' >> gradle.properties
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
-          echo 'org.gradle.vfs.watch=true' >> gradle.properties
-          echo 'org.gradle.jvmargs=-Xmx2048m' >> gradle.properties
           ./gradlew zipDebug zipRelease
       - name: Prepare artifact
         if: success()
