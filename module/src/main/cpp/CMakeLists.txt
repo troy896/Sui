@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.31)
 
 project("sui")
 
-message("Build type: ${CMAKE_BUILD_TYPE} ${FLAVOR}")
+message("Build type: ${CMAKE_BUILD_TYPE} Zygisk")
 
 set(CMAKE_CXX_STANDARD 17)
 

@@ -6,7 +6,7 @@ ext {
 
     moduleLibraryName = "sui"
 
-    moduleId = "zygisk-sui"
+    moduleId = "zygisk_sui"
 
     moduleName = "Sui"
     moduleAuthor = "Rikka"
