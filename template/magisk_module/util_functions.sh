@@ -44,8 +44,6 @@ check_android_version() {
 }
 
 check_magisk_version() {
-  ui_print "- Magisk version: $MAGISK_VER ($MAGISK_VER_CODE)"
-
   ui_print "- Installing Sui"
 
   if [ "$MAGISK_VER_CODE" -lt 23016 ]; then

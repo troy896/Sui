@@ -148,8 +148,8 @@ inline int setup_adb_root_apex(const char *root_path, const char *adbd_wrapper, 
     char path[PATH_MAX]{0};
     char source[PATH_MAX]{0};
     char target[PATH_MAX]{0};
-    const char *adbd, *adbd_real, *bin_folder, *lib_folder;
-    attrs file_attr{}, folder_attr{}, lib_attr{};
+    const char *adbd, *adbd_real, *bin_folder, *lib_folder, *data_adb_folder;
+    attrs file_attr{}, folder_attr{}, lib_attr{}, data_adb_attr{};
 
     adbd = "/apex/com.android.adbd/bin/adbd";
     adbd_real = "/apex/com.android.adbd/bin/adbd_real";
@@ -159,6 +159,7 @@ inline int setup_adb_root_apex(const char *root_path, const char *adbd_wrapper, 
 #else
     lib_folder = "/apex/com.android.adbd/lib";
 #endif
+    data_adb_folder = "/data/adb";
 
     if (!is_dynamically_linked(adbd)) {
         LOGE("%s is not dynamically linked (or 32 bit elf on 64 bit machine)", adbd);
@@ -168,7 +169,8 @@ inline int setup_adb_root_apex(const char *root_path, const char *adbd_wrapper, 
     }
 
     if (getattrs(adbd, &file_attr) != 0
-        || getattrs(bin_folder, &folder_attr) != 0) {
+        || getattrs(bin_folder, &folder_attr) != 0
+        || getattrs(data_adb_folder, &data_adb_attr) != 0) {
         return ERR_OTHER;
     } else {
         LOGV("%s: uid=%d, gid=%d, mode=%3o, context=%s",
@@ -258,7 +260,7 @@ inline int setup_adb_root_apex(const char *root_path, const char *adbd_wrapper, 
         if (file_attr.context) {
             freecon(file_attr.context);
         }
-        file_attr.context = strdup("u:object_r:magisk_file:s0");
+        file_attr.context = strdup(data_adb_attr.context);
 
         // $MODDIR/bin/adbd_real -> /apex/com.android.adbd/bin/adbd_real
         if (setup_file(my_backup, adbd_real, &file_attr) != 0) {
@@ -337,8 +339,8 @@ inline int setup_adb_root_apex(const char *root_path, const char *adbd_wrapper, 
 }
 
 inline int setup_adb_root_non_apex(const char *root_path, const char *adbd_wrapper, const char *adbd_preload) {
-    const char *file, *folder;
-    attrs file_attr{}, folder_attr{};
+    const char *file, *folder, *data_adb_folder;
+    attrs file_attr{}, folder_attr{}, data_adb_attr{};
 
     file = "/system/bin/adbd";
     folder = "/system/bin";
@@ -351,7 +353,8 @@ inline int setup_adb_root_non_apex(const char *root_path, const char *adbd_wrapp
     }
 
     if (getattrs(file, &file_attr) != 0
-        || getattrs(folder, &folder_attr) != 0) {
+        || getattrs(folder, &folder_attr) != 0
+        || getattrs(data_adb_folder, &data_adb_attr) != 0) {
         return ERR_OTHER;
     } else {
         LOGV("%s: uid=%d, gid=%d, mode=%3o, context=%s",
@@ -395,7 +398,7 @@ inline int setup_adb_root_non_apex(const char *root_path, const char *adbd_wrapp
     if (file_attr.context) {
         freecon(file_attr.context);
     }
-    file_attr.context = strdup("u:object_r:magisk_file:s0");
+    file_attr.context = strdup(data_adb_attr.context);
     if (setattrs(target, &file_attr) != 0) {
         unlink(target);
         return ERR_OTHER;
@@ -430,12 +433,18 @@ inline int setup_adb_root_non_apex(const char *root_path, const char *adbd_wrapp
 
 static int setup_adb_root(const char *root_path) {
     if (selinux_check_access("u:r:adbd:s0", "u:r:adbd:s0", "process", "setcurrent", nullptr) != 0) {
-        PLOGE("adbd adbd process setcurrent not allowed");
+        PLOGE("u:r:adbd:s0 u:r:adbd:s0 process setcurrent not allowed");
         return ERR_SELINUX;
     }
 
-    if (selinux_check_access("u:r:adbd:s0", "u:r:magisk:s0", "process", "dyntransition", nullptr) != 0) {
-        PLOGE("adbd magisk process dyntransition not allowed");
+    char *curr_con = nullptr;
+    if (getcon(&curr_con) != 0) {
+        PLOGE("getcon");
+        return ERR_SELINUX;
+    }
+
+    if (selinux_check_access("u:r:adbd:s0", curr_con, "process", "dyntransition", nullptr) != 0) {
+        PLOGE("u:r:adbd:s0 %s process dyntransition not allowed", curr_con);
         return ERR_SELINUX;
     }
 

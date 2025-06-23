@@ -17,7 +17,7 @@
 #include <socket.h>
 #include <sys/system_properties.h>
 #include "system_server.h"
-#include "main.h"
+#include "patcher_main.h"
 #include "settings_process.h"
 #include "manager_process.h"
 

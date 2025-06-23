@@ -7,15 +7,45 @@ if [ "$ZYGISK_ENABLED" = false ]; then
   exit 1
 fi
 
-MAGISK_VER_CODE=$(magisk -V)
-if [ "$MAGISK_VER_CODE" -ge 21000 ]; then
-  MAGISK_PATH="$(magisk --path)/.magisk/modules/$MODULE_ID"
-else
-  MAGISK_PATH=/sbin/.magisk/modules/$MODULE_ID
-fi
+if [ "$KSU" = true ]; then
+  MAGISK_PATH="$MODDIR"
 
-log -p i -t "Sui" "Magisk version $MAGISK_VER_CODE"
-log -p i -t "Sui" "Magisk module path $MAGISK_PATH"
+  log -p i -t "Sui" "KernelSU ksud version $KSU_VER ($KSU_VER_CODE)"
+  log -p i -t "Sui" "KernelSU kernel version $KSU_KERNEL_VER_CODE"
+  log -p i -t "Sui" "KernelSU module path $MAGISK_PATH"
+  apply_sepolicy() {
+    ksud sepolicy apply "$1"
+  }
+elif [  "$KERNELPATCH" = true  ]; then
+  MAGISK_PATH="$MODDIR"
+
+  kp_major_char=${KERNELPATCH_VERSION:0:1}
+  kp_minor_patch=${KERNELPATCH_VERSION:1}
+
+  kp_major=$(( $(printf '%d' "'$major_char") - 97 ))
+  kp_minor=$(( 10 + ${minor_patch:0:1} ))
+  kp_patch=${minor_patch:1}
+
+  log -p i -t "Sui" "APatch version $APATCH_VER ($APATCH_VER_CODE)"
+  log -p i -t "Sui" "KernelPatch version $major.$minor.$patch"
+  log -p i -t "Sui" "APatch module path $MAGISK_PATH"
+  apply_sepolicy() {
+    apd sepolicy apply "$1"
+  }
+else
+  MAGISK_VER_CODE=$(magisk -V)
+  if [ "$MAGISK_VER_CODE" -ge 21000 ]; then
+    MAGISK_PATH="$(magisk --path)/.magisk/modules/$MODULE_ID"
+  else
+    MAGISK_PATH=/sbin/.magisk/modules/$MODULE_ID
+  fi
+
+  log -p i -t "Sui" "Magisk version $MAGISK_VER_CODE"
+  log -p i -t "Sui" "Magisk module path $MAGISK_PATH"
+  apply_sepolicy() {
+    magiskpolicy --live --apply sepolicy apply "$1"
+  }
+fi
 
 enable_once="/data/adb/sui/enable_adb_root_once"
 enable_forever="/data/adb/sui/enable_adb_root"
@@ -35,14 +65,14 @@ fi
 if [ "$enable_adb_root" = true ]; then
   log -p i -t "Sui" "Setup adb root support"
 
-  # Run magiskpolicy manually if Magisk does not load sepolicy.rule
-  if [ ! -e "$(magisk --path)/.magisk/mirror/sepolicy.rules/$MODULE_ID/sepolicy.rule" ]; then
-    log -p e -t "Sui" "Magisk does not load sepolicy.rule..."
-    log -p e -t "Sui" "Exec magiskpolicy --live --apply $MAGISK_PATH/sepolicy.rule..."
-    magiskpolicy --live --apply "$MAGISK_PATH"/sepolicy.rule
+  # Make sure sepolicy.rule be loaded
+  if ! "$MAGISK_PATH"/sepolicy_checker; then
+    log -p e -t "Sui" "RootImpl does not load sepolicy.rule..."
+    log -p e -t "Sui" "Try to load it..."
+    apply_sepolicy "$MAGISK_PATH"/sepolicy.rule
     log -p i -t "Sui" "Apply finished"
   else
-    log -p i -t "Sui" "Magisk should have loaded sepolicy.rule correctly"
+    log -p i -t "Sui" "RootImpl should have loaded sepolicy.rule correctly"
   fi
 
   # Setup adb root support
