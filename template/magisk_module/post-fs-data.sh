@@ -66,6 +66,7 @@ if [ "$enable_adb_root" = true ]; then
   log -p i -t "Sui" "Setup adb root support"
 
   # Make sure sepolicy.rule be loaded
+  chmod 755 "$MAGISK_PATH"/sepolicy_checker
   if ! "$MAGISK_PATH"/sepolicy_checker; then
     log -p e -t "Sui" "RootImpl does not load sepolicy.rule..."
     log -p e -t "Sui" "Try to load it..."
