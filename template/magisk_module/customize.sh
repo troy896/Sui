@@ -37,8 +37,10 @@ extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
 extract "$ZIPFILE" 'sepolicy.rule' "$MODPATH"
 
 ui_print "- Patching sepolicy.rule"
-secon=$(id -Z | cut -d: -f3)
-sed -i "s|%secon%|$secon|g" "$MODPATH/sepolicy.rule"
+su_secon=$(id -Z | cut -d: -f3)
+adb_data_file_secon=$(ls -Zd /data/adb | awk '{print $1}' | cut -d: -f3)
+sed -i "s|%su_secon%|$su_secon|g" "$MODPATH/sepolicy.rule"
+sed -i "s|%adb_data_file_secon%|$adb_data_file_secon|g" "$MODPATH/sepolicy.rule"
 
 mkdir "$MODPATH/zygisk"
 
