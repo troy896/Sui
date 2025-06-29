@@ -31,7 +31,7 @@ else
 
   log -p i -t "Sui" "Magisk version $MAGISK_VER_CODE"
   apply_sepolicy() {
-    magiskpolicy --live --apply sepolicy apply "$1"
+    magiskpolicy --live --apply "$1"
   }
 fi
 
